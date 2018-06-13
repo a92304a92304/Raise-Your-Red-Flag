@@ -24,7 +24,7 @@ var app = new Vue({
   mounted: function() {
     var vm = this
     vm.Start()
-    // responsiveVoice.speak("遊戲開始囉")
+    responsiveVoice.speak("遊戲開始囉")
   },
   methods: {
     Start: function() {
@@ -91,12 +91,12 @@ var app = new Vue({
       var flag = Math.random()
       var raise = Math.random()
 
-      if(flag<=0.33333){
-        flag ='a'
-      } else if (flag>0.3333 && flag <=0.6666) {
-        flag ='b'
+      if(flag <= 0.33333){
+        flag = 'a'
+      } else if (flag > 0.3333 && flag <= 0.6666) {
+        flag = 'b'
       }else {
-        flag ='ab'
+        flag = 'ab'
       }
 
       if(raise<=0.5){
@@ -111,30 +111,30 @@ var app = new Vue({
 
     },
     ModifyScore: function(action){
-      if (action==='Set'){
-        if(this.isCorrect) this.score+=10;
-      }else if(action==='Get') {
+      if (action === 'Set'){
+        if(this.isCorrect) this.score += 10;
+      }else if(action === 'Get') {
         return this.score;
       }
     },
     // CheckAnswer: function(){
     //   this.detectList.forEach()
     // }
-    GetCurrent:function(){          //檢查動作
+    GetCurrent: function(){          //檢查動作
       var vm = this
       var current = this.current
       var tempA = 0
       var tempB = 0
       this.detectList.forEach(function(item, index, array){
-        if (item.color === vm.color.a && (item.y + (item.height/2))>=360) tempA++
-        if (item.color === vm.color.b && (item.y+(item.height/2))>=360) tempB++
+        if (item.color === vm.color.a && (item.y + (item.height / 2)) <= 360) tempA++
+        if (item.color === vm.color.b && (item.y + (item.height / 2)) <= 360) tempB++
       })
       vm.current = {a: tempA, b: tempB}
     }
   },
   watch: {
     detectList: function () {
-      this.TestColorIsInTheAreaOrNot()
+      this.GetCurrent()
     }
   }
 })
