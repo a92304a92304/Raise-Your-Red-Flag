@@ -16,6 +16,7 @@ var app = new Vue({
   mounted: function() {
     var vm = this
     vm.Start()
+    // responsiveVoice.speak("遊戲開始囉")
   },
   methods: {
     Start: function() {
