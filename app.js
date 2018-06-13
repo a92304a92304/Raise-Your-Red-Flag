@@ -10,6 +10,8 @@ var app = new Vue({
     tracker: null,
     task: null,
     detectlist: {},    // 所偵測到畫面中顏色的列表
+    score:0,          //得分
+    isCorrect:false,    //動作是否正確
   },
   mounted: function() {
     var vm = this
@@ -97,6 +99,13 @@ var app = new Vue({
         raise: raise,
       }
 
+    },
+    ModifyScore: function(action){
+      if (action==='Set'){
+        if(this.isCorrect) this.score+=10;
+      }else if(action==='Get') {
+        return this.score;
+      }
     }
   },
 })
