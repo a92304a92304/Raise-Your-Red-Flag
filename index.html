@@ -2,36 +2,69 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>偵測顏色</title>
+  <title>紅旗舉起來</title>
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
 </head>
 <body>
   <div id="app">
     <div class="opening" v-if="state == 0">
       <h1>紅旗<b>舉</b>起來</h1>
       <h2>Raise Your Red Flag</h2>
-      <button type="button" class="btn btn-danger start" @click="Start()">Game Start</button>
+      <button type="button" class="btn btn-danger start" @click="Start()">
+        GAME START!
+      </button>
     </div>
-    <template v-if="state == 1">
-
+    <template v-else-if="state == 1">
       <div class="display">
         <video id="video" width="1280" height="720" preload autoplay loop muted controls></video>
         <canvas id="canvas" width="1280" height="720"></canvas>
-        <div class="question">
-          {{ qNum }} - {{ q }}
+        <div class="game-start" v-if="qNum==0">
+          <div class="alert alert-success">
+            遊戲開始!
+          </div>
         </div>
+        <div class="question" v-if="qNum!=0">
+          <div class="alert alert-primary">
+            {{ q }}
+          </div>
+        </div>
+        <div class="judge" v-if="qNum!=0&&qNum!=1">
+          <transition mode="out-in" enter-active-class="animated bounceIn" >
+            <span class="text-success" :key="'o'+qNum" v-if="result">○</span>
+            <span class="text-danger" :key="'x'+qNum" v-else>×</span>
+          </transition>
+        </div>
+        <div class="q-num" v-if="qNum!=0">
+          <div class="alert alert-light">
+            #{{ qNum }}
+          </div>
+        </div>
+        <div class="score">
+          <div class="alert alert-info">
+            SCORE: {{ score }}
+          </div>
+        </div>
+        <div class="line">手請舉高過此線</div>
       </div>
-
-      <div class="debug-info">
-        <ul>
-          <!-- <li v-for='i in detectList'>{{ i }}</li> -->
-        </ul>
-        <div class="">玩家舉的 {{ current }}</div>
-        <div class="">正解 {{ answer }}</div>
+      <div class="debug-info" :class="{hide: !isShowDebug}" @click="isShowDebug=!isShowDebug">
+        <ul v-if="false"><li v-for='i in detectList'>{{ i }}</li></ul>
+        <div>玩家舉的 {{ current }}</div>
+        <div>正解 {{ answer }}</div>
         <div :class="{'text-success': result, 'text-danger': !result}">結果 {{ result }} </div>
       </div>
     </template>
+    <div class="opening game-over" v-else-if="state == 2">
+      <h1>紅旗<b>舉</b>起來</h1>
+      <h2>Raise Your Red Flag</h2>
+      <div class="score">
+        <div class="alert alert-info">
+          SCORE: {{ score }}
+        </div>
+      </div>
+      <button type="button" style="margin-top:1rem" class="btn btn-danger start" onclick="javascript:window.location.reload()">再玩壹次</button>
+    </div>
   </div>
   <script src="js/tracking-min.js"></script>
   <script src="js/stats.min.js"></script>
@@ -41,5 +74,3 @@
   <script src="app.js" charset="utf-8"></script>
 </body>
 </html>
-
-<!-- https://tutorials.webduino.io/zh-tw/docs/socket/useful/tracking.html -->

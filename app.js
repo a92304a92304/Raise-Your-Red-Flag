@@ -1,44 +1,44 @@
 var app = new Vue({
   el: '#app',
   data: {
-    state: 0,          // 0: 開頭畫面,  1: 遊戲開始
+    state: 0,          // 0: 開頭畫面,  1: 遊戲開始,  2: GAME OVER
     canvas: null,
     tracker: null,
     task: null,
-    detectList: {},    // 所偵測到畫面中顏色的列表
-    score:0,           // 得分
-    color: {
-      a: 'red',
-      b: 'blue',
-    },
-    isCorrect:false,   // 動作是否正確
-    answer: {         // a=red b=blue up or down
-      a: false,
-      b: false,
-    },
-    current: {
-      a: false,
-      b: false,
-    },
-    q: '',
-    result: null,
-    qNum: 0,
+    detectList: {},                       // 所偵測到畫面中顏色的列表
+    score: 0,                             // 得分
+    answer: { a: false, b: false },       // 預期正解
+    current: { a: false, b: false },      // 玩家舉的
+    q: '',                  // 題目中文字
+    result: null,           // 答對與否
+    qNum: 0,                // 當前第幾題
+    interval: null,         // 儲存計數器編號(結束遊戲用)
+    // ––––––可設定––––––
+    color: { a: 'red', b: 'blue' },     // a和b旗分別代表之顏色(與註冊之顏色對應)
+    speed: 3500,                        // 換題延遲
+    isShowDebug: false,                 // 是否顯示DEBUG視窗
+    maxGame: 30,                        // 遊戲總場數
   },
   mounted: function() {
     var vm = this
-    responsiveVoice.setDefaultVoice("Chinese Female");
-    vm.Start()
-    // responsiveVoice.speak("遊戲開始囉")
+    try{ responsiveVoice.setDefaultVoice("Chinese Female") }
+    catch(e){}
   },
   methods: {
     Start: function() {
       var vm = this
-      vm.state = 1
-      setTimeout(this.RunTask, 1000)
+      vm.state = 1  // 設定遊戲狀態
+      setTimeout(this.RunTask, 1000)  // 1秒後啟用攝像頭
 
-      setInterval(function () {
+      // 設定計數器
+      this.interval = setInterval(function () {
         vm.SetAnswer()
-      }, 3000)
+      }, vm.speed)
+    },
+    Stop: function () {
+      var vm = this
+      clearInterval(vm.interval)  // 停止計數器
+      vm.state = 2
     },
     SetAnswer: function () {
       var rand = this.RandomMakeQuestion()
@@ -60,8 +60,10 @@ var app = new Vue({
         default:
       }
       this.q = this.GetAnswerText(rand)
-      responsiveVoice.speak(this.q)
       this.qNum++
+      // responsiveVoice.speak(this.q)
+      if(this.qNum > this.maxGame) this.Stop()
+
     },
     GetAnswerText: function (rand) {
       var flag, action
@@ -74,20 +76,28 @@ var app = new Vue({
           flag = '藍旗'
           break;
         case 'ab':
-          flag = '紅旗藍旗'
+          var text = ['紅旗藍旗', '藍旗紅旗', '通通', '全部']
+          var n = Math.floor(Math.random() * text.length + 1)-1
+          flag = text[n]
           break;
         default:
       }
-      if(rand.raise)
-        action = (Math.random()>.5)? '舉起來' : '不要降'
-      else
-        action = (Math.random()>.5)? '放下來' : '不要升'
+      if(rand.raise){
+          var text = ['舉起來', '升起來', '不要降', '不要放', '舉高高']
+          var n = Math.floor(Math.random() * text.length + 1)-1
+          action = text[n]
+        } else{
+          var text = ['放下來', '不要升', '不要舉', '放低低']
+          var n = Math.floor(Math.random() * text.length + 1)-1
+          action = text[n]
+        }
       return flag + action
     },
     CheckAnswer: function () {
       var answer = this.answer
       var current = this.current
       this.result = (answer.a == current.a && answer.b == current.b)
+      if(this.result) this.score += 10
       return this.result
     },
     SetColor: function() {
@@ -168,14 +178,7 @@ var app = new Vue({
       }
 
     },
-    ModifyScore: function(action){
-      if (action === 'Set'){
-        if(this.isCorrect) this.score += 10;
-      }else if(action === 'Get') {
-        return this.score;
-      }
-    },
-    GetCurrent: function(){          //檢查動作
+    GetCurrent: function(){          // 檢查動作
       var vm = this
       var current = this.current
       var tempA = 0
