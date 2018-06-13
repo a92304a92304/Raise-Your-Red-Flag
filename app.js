@@ -26,6 +26,7 @@ var app = new Vue({
   },
   mounted: function() {
     var vm = this
+    responsiveVoice.setDefaultVoice("Chinese Female");
     vm.Start()
     // responsiveVoice.speak("遊戲開始囉")
   },
