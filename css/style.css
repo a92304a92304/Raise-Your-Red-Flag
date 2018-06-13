@@ -27,7 +27,7 @@
   font-size: 5rem;
   font-weight: bold;
   text-shadow: 0 0 1rem white;
-  /* font-family: '微軟正黑體'; */
+
   letter-spacing: 1rem;
 }
 .opening h2{
@@ -50,4 +50,10 @@ button.start{
 #video, #canvas {
   position: absolute;
   transform: rotateY(180deg);
+}
+.debug-info{
+  position: absolute;
+  background-color: rgba(255,255,255,.5);
+  bottom: 1rem;
+  right: 1rem;
 }

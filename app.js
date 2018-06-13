@@ -13,6 +13,7 @@ var app = new Vue({
   },
   mounted: function() {
     var vm = this
+    vm.Start()
   },
   methods: {
     Start: function() {
