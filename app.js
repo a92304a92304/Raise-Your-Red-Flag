@@ -1,17 +1,25 @@
 var app = new Vue({
   el: '#app',
   data: {
-    color: {
-      left: null,
-      right: null,
-    },
     state: 0,          // 0: 開頭畫面,  1: 遊戲開始
     canvas: null,
     tracker: null,
     task: null,
-    detectlist: {},    // 所偵測到畫面中顏色的列表
-    score:0,          //得分
-    isCorrect:false,    //動作是否正確
+    detectList: {},    // 所偵測到畫面中顏色的列表
+    score:0,           // 得分
+    color: {
+      a: 'red',
+      b: 'blue',
+    },
+    isCorrect:false,   // 動作是否正確
+    answer: {         // a=red b=blue up or down
+      a: false,
+      b: false,
+    },
+    current: {
+      a: false,
+      b: false,
+    },
   },
   mounted: function() {
     var vm = this
@@ -61,7 +69,7 @@ var app = new Vue({
         var context = vm.canvas.getContext('2d')
         context.clearRect(0, 0, canvas.width, canvas.height)
 
-        vm.detectlist = event.data
+        vm.detectList = event.data
         if (event.data.length === 0) {
           // 未偵測到物件
         } else {
@@ -107,6 +115,25 @@ var app = new Vue({
       }else if(action==='Get') {
         return this.score;
       }
+    },
+    // CheckAnswer: function(){
+    //   this.detectList.forEach()
+    // }
+    GetCurrent:function(){          //檢查動作
+      var vm = this
+      var current = this.current
+      var tempA = 0
+      var tempB = 0
+      this.detectList.forEach(function(item, index, array){
+        if (item.color === vm.color.a && (item.y + (item.height/2))>=360) tempA++
+        if (item.color === vm.color.b && (item.y+(item.height/2))>=360) tempB++
+      })
+      vm.current = {a: tempA, b: tempB}
     }
   },
+  watch: {
+    detectList: function () {
+      this.TestColorIsInTheAreaOrNot()
+    }
+  }
 })
