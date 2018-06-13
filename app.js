@@ -72,6 +72,31 @@ var app = new Vue({
         })
         }
       })
+    },
+    RandomMakeQuestion: function(){
+      //a =redFlag,b =blueFlag,ab =redFlag&blueFlag
+      //raise: up->true down->false
+      var flag = Math.random()
+      var raise = Math.random()
+
+      if(flag<=0.33333){
+        flag ='a'
+      } else if (flag>0.3333 && flag <=0.6666) {
+        flag ='b'
+      }else {
+        flag ='ab'
+      }
+
+      if(raise<=0.5){
+        rasie = true
+      }else {
+        raise = false
+      }
+      return {
+        flag: flag,
+        raise: raise,
+      }
+
     }
   },
 })
