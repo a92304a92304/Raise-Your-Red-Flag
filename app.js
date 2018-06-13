@@ -20,20 +20,77 @@ var app = new Vue({
       a: false,
       b: false,
     },
+    q: '',
+    result: null,
+    qNum: 0,
   },
   mounted: function() {
     var vm = this
     vm.Start()
-    responsiveVoice.speak("遊戲開始囉")
+    // responsiveVoice.speak("遊戲開始囉")
   },
   methods: {
     Start: function() {
-      this.state = 1
+      var vm = this
+      vm.state = 1
       setTimeout(this.RunTask, 1000)
+
+      setInterval(function () {
+        vm.SetAnswer()
+      }, 3000)
+    },
+    SetAnswer: function () {
+      var rand = this.RandomMakeQuestion()
+
+      if(this.qNum != 0){
+        this.CheckAnswer()
+      }
+
+      switch (rand.flag) {
+        case 'a':
+          this.answer.a = rand.raise
+          break;
+        case 'b':
+          this.answer.b = rand.raise
+          break;
+        case 'ab':
+          this.answer.a = this.answer.b = rand.raise
+          break;
+        default:
+      }
+      this.q = this.GetAnswerText(rand)
+      responsiveVoice.speak(this.q)
+      this.qNum++
+    },
+    GetAnswerText: function (rand) {
+      var flag, action
+
+      switch (rand.flag) {
+        case 'a':
+          flag = '紅旗'
+          break;
+        case 'b':
+          flag = '藍旗'
+          break;
+        case 'ab':
+          flag = '紅旗藍旗'
+          break;
+        default:
+      }
+      if(rand.raise)
+        action = (Math.random()>.5)? '舉起來' : '不要降'
+      else
+        action = (Math.random()>.5)? '放下來' : '不要升'
+      return flag + action
+    },
+    CheckAnswer: function () {
+      var answer = this.answer
+      var current = this.current
+      this.result = (answer.a == current.a && answer.b == current.b)
+      return this.result
     },
     SetColor: function() {
       var vm = this
-
       // 先註冊顏色規則
       tracking.ColorTracker.registerColor("red", function(r, g, b) {
         if (r > 160 && g < 80 && b < 80) {
@@ -48,7 +105,7 @@ var app = new Vue({
         return false;
       });
       tracking.ColorTracker.registerColor("blue", function(r, g, b) {
-        if (r < 80 && g < 80 && b > 160) {
+        if (r < 80 && g < 80 && b > 130) {
           return true;
         }
         return false;
@@ -117,9 +174,6 @@ var app = new Vue({
         return this.score;
       }
     },
-    // CheckAnswer: function(){
-    //   this.detectList.forEach()
-    // }
     GetCurrent: function(){          //檢查動作
       var vm = this
       var current = this.current

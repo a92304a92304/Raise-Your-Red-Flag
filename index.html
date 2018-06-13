@@ -14,15 +14,22 @@
       <button type="button" class="btn btn-danger start" @click="Start()">Game Start</button>
     </div>
     <template v-if="state == 1">
+
       <div class="display">
         <video id="video" width="1280" height="720" preload autoplay loop muted controls></video>
         <canvas id="canvas" width="1280" height="720"></canvas>
+        <div class="question">
+          {{ qNum }} - {{ q }}
+        </div>
       </div>
+
       <div class="debug-info">
         <ul>
-          <li v-for='i in detectList'>{{ i }}</li>
+          <!-- <li v-for='i in detectList'>{{ i }}</li> -->
         </ul>
-        <span>{{ current }}</span>
+        <div class="">玩家舉的 {{ current }}</div>
+        <div class="">正解 {{ answer }}</div>
+        <div :class="{'text-success': result, 'text-danger': !result}">結果 {{ result }} </div>
       </div>
     </template>
   </div>

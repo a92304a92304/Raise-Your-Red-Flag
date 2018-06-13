@@ -57,3 +57,15 @@ button.start{
   bottom: 1rem;
   right: 1rem;
 }
+
+.question{
+  z-index: 100000;
+  position: absolute;
+  bottom: 3rem;
+  font-size: 5rem;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  text-shadow: 0 0 1rem black;
+  color: white;
+}
