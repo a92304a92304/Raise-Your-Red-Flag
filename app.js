@@ -88,7 +88,7 @@ var app = new Vue({
       }
 
       if(raise<=0.5){
-        rasie = true
+        raise = true
       }else {
         raise = false
       }
