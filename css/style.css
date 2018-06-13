@@ -1,0 +1,53 @@
+/* 定義變數區 */
+:root {
+  /* 定義畫面大小 */
+  --display-width: 1280px;
+  --display-height: 720px;
+}
+#app{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.opening{
+  text-align: center;
+  width: var(--display-width);
+  height: var(--display-height);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: url('http://www.bmss.com/wp-content/uploads/2017/03/Red-Flag-Rule-Photo-e1488549729472.jpeg');
+  background-size: cover;
+  background-position: right;
+}
+.opening h1{
+  font-size: 5rem;
+  font-weight: bold;
+  text-shadow: 0 0 1rem white;
+  /* font-family: '微軟正黑體'; */
+  letter-spacing: 1rem;
+}
+.opening h2{
+  font-size: 3rem;
+  margin-bottom: 3rem;
+}
+.opening h1 b{
+  font-size: 9rem;
+}
+button.start{
+  font-size: 3rem;
+}
+.display{
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  width: var(--display-width);
+  height: var(--display-height);
+}
+#video, #canvas {
+  position: absolute;
+  transform: rotateY(180deg);
+}
