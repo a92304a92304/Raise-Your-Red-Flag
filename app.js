@@ -10,6 +10,8 @@ var app = new Vue({
     tracker: null,
     task: null,
     detectlist: {},    // 所偵測到畫面中顏色的列表
+    score:0,          //得分
+    isCorrect:false,    //動作是否正確
   },
   mounted: function() {
     var vm = this
@@ -73,6 +75,38 @@ var app = new Vue({
         })
         }
       })
+    },
+    RandomMakeQuestion: function(){
+      //a =redFlag,b =blueFlag,ab =redFlag&blueFlag
+      //raise: up->true down->false
+      var flag = Math.random()
+      var raise = Math.random()
+
+      if(flag<=0.33333){
+        flag ='a'
+      } else if (flag>0.3333 && flag <=0.6666) {
+        flag ='b'
+      }else {
+        flag ='ab'
+      }
+
+      if(raise<=0.5){
+        raise = true
+      }else {
+        raise = false
+      }
+      return {
+        flag: flag,
+        raise: raise,
+      }
+
+    },
+    ModifyScore: function(action){
+      if (action==='Set'){
+        if(this.isCorrect) this.score+=10;
+      }else if(action==='Get') {
+        return this.score;
+      }
     }
   },
 })
