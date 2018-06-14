@@ -2,16 +2,16 @@ doctype html
 html
   head
     meta(charset='utf-8')
-    title 紅旗舉起來
+    title 紅旗舉起來 Raise Your Red Flag
+    link(rel='icon', type='image/png', href='flag.png')
     link(rel='stylesheet', href='css/bootstrap.min.css')
     link(rel='stylesheet', href='css/style.css')
     link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css')
   body
     #app
-      transition-group(enter-active-class='animated flipInX')
+      transition-group(enter-active-class='animated zoomInDown')
         .opening(key='0', v-if='state == 0')
-          h1(v-if='0') 紅旗#[b 舉]起來
-          h1(v-else) 那支#[b 舉起]專家
+          h1 紅旗#[b 舉]起來
           h2 Raise Your Red Flag
           button.btn.btn-danger.start(type='button', @click='Start()') GAME START!
           .setting
@@ -19,16 +19,16 @@ html
               | 語音TTS 
               span.badge.badge-pill.badge-light(v-if='isPlayVoice') ON
               span.badge.badge-pill.badge-primary(v-else) OFF
-              
+
             .input-group.mb-3
               .input-group-prepend #[span.input-group-text 題數]
               input.form-control(type='number' v-model.number="maxGame" style={width: `5rem`})
             .input-group.mb-3
               .input-group-prepend #[span.input-group-text 難易度]
               select.custom-select(v-model.number="speed")
-                option(value='5000') 易
-                option(value='3500' selected) 普
-                option(value='2000') 難
+                option(value='5000') 易　　
+                option(value='3500' selected) 普　　
+                option(value='2000') 難　　
 
         .gaming(key='1', v-else-if='state == 1')
           .display
@@ -54,13 +54,14 @@ html
             div 正解 {{ answer }}
             div(:class="{'text-success': result, 'text-danger': !result}") 結果 {{ result }} 
         .game-over(key='2', v-else-if='state == 2')
-          h1 紅旗#[b 舉]起來
+          h1 那支#[b 舉起]專家
           .score
             .alert.alert-info SCORE: {{ score }}
           button.btn.btn-danger.start(type='button', style='margin-top:1rem', onclick='javascript:window.location.reload()') 再玩壹次
     script(src='js/tracking-min.js')
-    script(src='js/stats.min.js')
+    //- script(src='js/stats.min.js')
     script(src='js/color_camera_gui.js')
     script(src='js/vue.js')
+    script(src='js/lodash.min.js')
     script(src='https://code.responsivevoice.org/responsivevoice.js')
     script(src='js/app.js', charset='utf-8')

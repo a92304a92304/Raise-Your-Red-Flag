@@ -5,21 +5,23 @@ var app = new Vue({
     canvas: null,
     tracker: null,
     task: null,
-    detectList: {},                       // 所偵測到畫面中顏色的列表
+    detectList: [],                       // 所偵測到畫面中顏色的列表
     score: 0,                             // 得分
     answer: { a: false, b: false },       // 預期正解
     current: { a: false, b: false },      // 玩家舉的
     q: '',                  // 題目中文字
     result: null,           // 答對與否
     qNum: 0,                // 當前第幾題
+    repeatedAction: {raise: true, time: 0},           // 記錄相同動作重複次數(避免多次)
     interval: null,         // 儲存計數器編號(結束遊戲用)
     // ––––––可設定––––––
     color: { a: 'red', b: 'blue' },     // a和b旗分別代表之顏色(與註冊之顏色對應)
     speed: 3500,                        // 換題延遲
-    isShowDebug: false,                 // 是否顯示DEBUG視窗
+    isShowDebug: true,                 // 是否顯示DEBUG視窗
     maxGame: 20,                        // 遊戲總場數
     isPlayVoice: false,                  // 是否播放語音
   },
+
   mounted: function() {
     var vm = this
     try{ responsiveVoice.setDefaultVoice("Chinese Female") }
@@ -41,39 +43,40 @@ var app = new Vue({
       vm.state = 2
     },
     SetAnswer: function() {
-      var rand = this.RandomMakeQuestion()
-
+      var newQ = this.RandomMakeQuestion()
       if(this.qNum != 0){
         this.CheckAnswer()
       }
 
-      switch (rand.flag) {
+      switch (newQ.flag) {
         case 'a':
-          this.answer.a = rand.raise
+          this.answer.a = newQ.raise
           break;
         case 'b':
-          this.answer.b = rand.raise
+          this.answer.b = newQ.raise
           break;
         case 'ab':
-          this.answer.a = this.answer.b = rand.raise
+          this.answer.a = this.answer.b = newQ.raise
           break;
         default:
       }
 
-      this.q = this.GetAnswerText(rand)
+      this.q = this.GetAnswerText(newQ)
+      console.log(this.repeatedAction.raise, this.repeatedAction.time)
       this.qNum++
+
       if(this.qNum > this.maxGame) {
         this.Stop()
-        return true;
+        return true
       }
 
       if(this.isPlayVoice)
         responsiveVoice.speak(this.q)
     },
-    GetAnswerText: function(rand) {
-      var flag, action
+    GetAnswerText: function(newQ) {
+      let flag, action
 
-      switch (rand.flag) {
+      switch (newQ.flag) {
         case 'a':
           flag = '紅旗'
           break;
@@ -85,11 +88,11 @@ var app = new Vue({
           break;
         default:
       }
-      if(rand.raise){
-          action = this.RandomChoose(['舉起來', '升起來', '不要降', '不要放', '舉高高'])
-        } else{
-          action = this.RandomChoose(['放下來', '不要升', '不要舉', '放低低'])
-        }
+      if(newQ.raise){
+        action = this.RandomChoose(['舉起來', '升起來', '不要降', '不要放'])
+      } else{
+        action = this.RandomChoose(['放下來', '放下去', '不要升', '不要舉'])
+      }
       return `${flag}${action}`
     },
     CheckAnswer: function() {
@@ -103,23 +106,14 @@ var app = new Vue({
       var vm = this
       // 先註冊顏色規則
       tracking.ColorTracker.registerColor("red", (r, g, b) => {
-        if (r > 140 && g < 80 && b < 80) {
-          return true;
-        }
-        return false;
-      });
+        return (r > 140 && g < 80 && b < 80)
+      })
       tracking.ColorTracker.registerColor("green", (r, g, b) =>  {
-        if (r < 80 && g > 160 && b < 80) {
-          return true;
-        }
-        return false;
-      });
+        return (r < 80 && g > 140 && b < 80)
+      })
       tracking.ColorTracker.registerColor("blue", (r, g, b) => {
-        if (r < 80 && g < 80 && b > 100) {
-          return true;
-        }
-        return false;
-      });
+        return (r < 80 && g < 80 && b > 140)
+      })
 
       // 使用上面註冊的顏色。
       vm.tracker.setColors(['red', 'green', 'blue'])
@@ -171,6 +165,16 @@ var app = new Vue({
       }else {
         raise = false
       }
+
+      if(this.repeatedAction.raise == raise){
+        this.repeatedAction.time++
+        if(this.repeatedAction.time > 3){
+          raise = !raise
+        }
+      }else{
+        this.repeatedAction.raise = raise
+        this.repeatedAction.time = 0
+      }
       return {
         flag: flag,
         raise: raise,
@@ -179,7 +183,6 @@ var app = new Vue({
     },
     GetCurrent: function() {          // 檢查動作
       var vm = this
-      var current = this.current
       var tempA = 0
       var tempB = 0
       this.detectList.forEach((item, index, array) => {
@@ -189,7 +192,7 @@ var app = new Vue({
       vm.current = {a: tempA, b: tempB}
     },
     RandomChoose: function (array) {
-      var n = Math.floor(Math.random() * array.length + 1) - 1
+      const n = Math.floor(Math.random() * array.length + 1) - 1
       return array[n]
     }
   },
