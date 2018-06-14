@@ -1,0 +1,62 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    title 紅旗舉起來
+    link(rel='stylesheet', href='css/bootstrap.min.css')
+    link(rel='stylesheet', href='css/style.css')
+    link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css')
+  body
+    #app
+      transition-group(enter-active-class='animated flipInX')
+        .opening(key='0', v-if='state == 0')
+          h1
+            | 紅旗
+            b 舉
+            | 起來
+          h2 Raise Your Red Flag
+          button.btn.btn-danger.start(type='button', @click='Start()')
+            | GAME START!
+        div(key='1', v-else-if='state == 1')
+          .display
+            video#video(width='1280', height='720', preload='', autoplay='', loop='', muted='', controls='')
+            canvas#canvas(width='1280', height='720')
+            .game-start(v-if='qNum==0')
+              .alert.alert-success
+                | 遊戲開始!
+            .question(v-if='qNum!=0')
+              .alert.alert-primary
+                | {{ q }}
+            .judge(v-if='qNum!=0&&qNum!=1')
+              transition(mode='out-in', enter-active-class='animated bounceIn')
+                span.text-success(:key="'o'+qNum", v-if='result') ○
+                span.text-danger(:key="'x'+qNum", v-else='') ×
+            .q-num(v-if='qNum!=0')
+              .alert.alert-light
+                | # {{ qNum }}
+            .score
+              .alert.alert-info
+                | SCORE: {{ score }}
+            .line 手請舉高過此線
+          .debug-info(:class='{hide: !isShowDebug}', @click='isShowDebug=!isShowDebug')
+            ul(v-if='false')
+              li(v-for='i in detectList') {{ i }}
+            div 玩家舉的 {{ current }}
+            div 正解 {{ answer }}
+            div(:class="{'text-success': result, 'text-danger': !result}") 結果 {{ result }} 
+        .opening.game-over(key='2', v-else-if='state == 2')
+          h1
+            | 紅旗
+            b 舉
+            | 起來
+          h2 Raise Your Red Flag
+          .score
+            .alert.alert-info
+              | SCORE: {{ score }}
+          button.btn.btn-danger.start(type='button', style='margin-top:1rem', onclick='javascript:window.location.reload()') 再玩壹次
+    script(src='js/tracking-min.js')
+    script(src='js/stats.min.js')
+    script(src='js/color_camera_gui.js')
+    script(src='js/vue.js')
+    script(src='http://code.responsivevoice.org/responsivevoice.js')
+    script(src='js/app.js', charset='utf-8')
