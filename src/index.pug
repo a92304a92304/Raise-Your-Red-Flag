@@ -5,8 +5,8 @@ html
     title 紅旗舉起來 Raise Your Red Flag
     link(rel='icon', type='image/png', href='flag.png')
     link(rel='stylesheet', href='css/bootstrap.min.css')
-    link(rel='stylesheet', href='css/style.css')
     link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css')
+    link(rel='stylesheet', href='css/style.css')
   body
     #app
       transition-group(enter-active-class='animated zoomInDown')
@@ -34,14 +34,16 @@ html
           .display
             video#video(width='1280', height='720', preload, autoplay, loop, muted, controls)
             canvas#canvas(width='1280', height='720')
-            .game-start(v-if='qNum==0')
-              .alert.alert-success 遊戲開始!
+            transition(leave-active-class='animated fadeOut')
+              .game-start(v-if='qNum==0')
+                .alert.alert-success 遊戲開始!
+                img(src='MaximBady.png' hidden)
             .question(v-if='qNum!=0')
               .alert.alert-primary {{ q }}
-            .judge(v-if='qNum!=0&&qNum!=1')
-              transition(mode='out-in', enter-active-class='animated bounceIn')
-                span.text-success(:key="'o'+qNum", v-if='result') ○
-                span.text-danger(:key="'x'+qNum", v-else='') ×
+            .judge
+                transition(mode="out-in" enter-active-class='animated bounceIn' v-show='!isResultHide')
+                  span.text-success(:key="'o' + qNum", v-if='result && qNum!=0&&qNum!=1') ✓
+                  span.text-danger(:key="'x' + qNum", v-else-if='!result && qNum!=0&&qNum!=1') ×
             .q-num(v-if='qNum!=0')
               .alert.alert-light # {{ qNum }}
             .score

@@ -14,6 +14,7 @@ var app = new Vue({
     qNum: 0,                // 當前第幾題
     repeatedAction: {raise: true, time: 0},           // 記錄相同動作重複次數(避免多次)
     interval: null,         // 儲存計數器編號(結束遊戲用)
+    isResultHide: false,
     // ––––––可設定––––––
     color: { a: 'red', b: 'blue' },     // a和b旗分別代表之顏色(與註冊之顏色對應)
     speed: 3500,                        // 換題延遲
@@ -44,6 +45,7 @@ var app = new Vue({
     },
     SetAnswer: function() {
       var newQ = this.RandomMakeQuestion()
+
       if(this.qNum != 0){
         this.CheckAnswer()
       }
@@ -62,7 +64,6 @@ var app = new Vue({
       }
 
       this.q = this.GetAnswerText(newQ)
-      console.log(this.repeatedAction.raise, this.repeatedAction.time)
       this.qNum++
 
       if(this.qNum > this.maxGame) {
@@ -99,6 +100,10 @@ var app = new Vue({
       var answer = this.answer
       var current = this.current
       this.result = (answer.a == current.a && answer.b == current.b)
+
+      this.isResultHide = false
+      setTimeout(() => { this.isResultHide = true }, 1000)
+
       if(this.result) this.score += 10
       return this.result
     },

@@ -88,6 +88,13 @@
   text-align: center
   font-size: 4rem
   width: 100%
+  img
+    z-index: 0
+    position: absolute
+    height: 300px
+    width: auto
+    right: 4rem
+    bottom: -8rem
 
 .question
   z-index: 999
@@ -144,4 +151,8 @@
   border-bottom: 0.25rem dashed rgba(150, 150, 150, 0.5)
 
 .hide
+  transition: .5s opacity
   opacity: 0
+
+.animated.fadeOut
+  animation-duration: .3s
