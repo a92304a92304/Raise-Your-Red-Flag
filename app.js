@@ -28,7 +28,7 @@ var app = new Vue({
     Start: function() {
       var vm = this
       vm.state = 1  // 設定遊戲狀態
-      setTimeout(this.RunTask, 1000)  // 1秒後啟用攝像頭
+      setTimeout(this.RunTask, 500)  // 1秒後啟用攝像頭
 
       // 設定計數器
       this.interval = setInterval(function () {
@@ -61,7 +61,7 @@ var app = new Vue({
       }
       this.q = this.GetAnswerText(rand)
       this.qNum++
-      // responsiveVoice.speak(this.q)
+      responsiveVoice.speak(this.q)
       if(this.qNum > this.maxGame) this.Stop()
 
     },
