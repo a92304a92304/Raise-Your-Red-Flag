@@ -17,7 +17,8 @@ var app = new Vue({
     color: { a: 'red', b: 'blue' },     // a和b旗分別代表之顏色(與註冊之顏色對應)
     speed: 3500,                        // 換題延遲
     isShowDebug: false,                 // 是否顯示DEBUG視窗
-    maxGame: 30,                        // 遊戲總場數
+    maxGame: 20,                        // 遊戲總場數
+    isPlayVoice: false,                  // 是否播放語音
   },
   mounted: function() {
     var vm = this
@@ -27,20 +28,19 @@ var app = new Vue({
   methods: {
     Start: function() {
       var vm = this
-      vm.state = 1  // 設定遊戲狀態
-      setTimeout(this.RunTask, 500)  // 1秒後啟用攝像頭
-
+      vm.state = 1                 // 設定遊戲狀態
+      setTimeout(vm.RunTask, 500)  // 1秒後啟用攝像頭
       // 設定計數器
-      this.interval = setInterval(function () {
+      this.interval = setInterval(() => {
         vm.SetAnswer()
       }, vm.speed)
     },
-    Stop: function () {
+    Stop: function() {
       var vm = this
       clearInterval(vm.interval)  // 停止計數器
       vm.state = 2
     },
-    SetAnswer: function () {
+    SetAnswer: function() {
       var rand = this.RandomMakeQuestion()
 
       if(this.qNum != 0){
@@ -59,13 +59,18 @@ var app = new Vue({
           break;
         default:
       }
+
       this.q = this.GetAnswerText(rand)
       this.qNum++
-      responsiveVoice.speak(this.q)
-      if(this.qNum > this.maxGame) this.Stop()
+      if(this.qNum > this.maxGame) {
+        this.Stop()
+        return true;
+      }
 
+      if(this.isPlayVoice)
+        responsiveVoice.speak(this.q)
     },
-    GetAnswerText: function (rand) {
+    GetAnswerText: function(rand) {
       var flag, action
 
       switch (rand.flag) {
@@ -76,24 +81,18 @@ var app = new Vue({
           flag = '藍旗'
           break;
         case 'ab':
-          var text = ['紅旗藍旗', '藍旗紅旗', '通通', '全部']
-          var n = Math.floor(Math.random() * text.length + 1)-1
-          flag = text[n]
+          flag = this.RandomChoose(['紅旗藍旗', '藍旗紅旗', '通通', '全部'])
           break;
         default:
       }
       if(rand.raise){
-          var text = ['舉起來', '升起來', '不要降', '不要放', '舉高高']
-          var n = Math.floor(Math.random() * text.length + 1)-1
-          action = text[n]
+          action = this.RandomChoose(['舉起來', '升起來', '不要降', '不要放', '舉高高'])
         } else{
-          var text = ['放下來', '不要升', '不要舉', '放低低']
-          var n = Math.floor(Math.random() * text.length + 1)-1
-          action = text[n]
+          action = this.RandomChoose(['放下來', '不要升', '不要舉', '放低低'])
         }
-      return flag + action
+      return `${flag}${action}`
     },
-    CheckAnswer: function () {
+    CheckAnswer: function() {
       var answer = this.answer
       var current = this.current
       this.result = (answer.a == current.a && answer.b == current.b)
@@ -103,20 +102,20 @@ var app = new Vue({
     SetColor: function() {
       var vm = this
       // 先註冊顏色規則
-      tracking.ColorTracker.registerColor("red", function(r, g, b) {
-        if (r > 160 && g < 80 && b < 80) {
+      tracking.ColorTracker.registerColor("red", (r, g, b) => {
+        if (r > 140 && g < 80 && b < 80) {
           return true;
         }
         return false;
       });
-      tracking.ColorTracker.registerColor("green", function(r, g, b) {
+      tracking.ColorTracker.registerColor("green", (r, g, b) =>  {
         if (r < 80 && g > 160 && b < 80) {
           return true;
         }
         return false;
       });
-      tracking.ColorTracker.registerColor("blue", function(r, g, b) {
-        if (r < 80 && g < 80 && b > 130) {
+      tracking.ColorTracker.registerColor("blue", (r, g, b) => {
+        if (r < 80 && g < 80 && b > 100) {
           return true;
         }
         return false;
@@ -125,7 +124,7 @@ var app = new Vue({
       // 使用上面註冊的顏色。
       vm.tracker.setColors(['red', 'green', 'blue'])
     },
-    RunTask: function () {
+    RunTask: function() {
       var vm = this
       // 初始化 Tracker 和 canvas
       vm.tracker = new tracking.ColorTracker()
@@ -134,7 +133,7 @@ var app = new Vue({
       vm.SetColor()
 
       // 開始追蹤顏色
-      vm.tracker.on('track', function(event) {
+      vm.tracker.on('track', (event) => {
         var context = vm.canvas.getContext('2d')
         context.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -142,18 +141,18 @@ var app = new Vue({
         if (event.data.length === 0) {
           // 未偵測到物件
         } else {
-          event.data.forEach(function(rect) {
-          context.strokeStyle = rect.color;
-          context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-          context.font = '14px arial';
-          context.fillStyle = "#fff";
-          context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
-          context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
-        })
+          event.data.forEach((rect) => {
+            context.strokeStyle = rect.color;
+            context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+            context.font = '14px arial';
+            context.fillStyle = "#fff";
+            context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
+            context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
+          })
         }
       })
     },
-    RandomMakeQuestion: function(){
+    RandomMakeQuestion: function() {
       //a =redFlag,b =blueFlag,ab =redFlag&blueFlag
       //raise: up->true down->false
       var flag = Math.random()
@@ -178,20 +177,24 @@ var app = new Vue({
       }
 
     },
-    GetCurrent: function(){          // 檢查動作
+    GetCurrent: function() {          // 檢查動作
       var vm = this
       var current = this.current
       var tempA = 0
       var tempB = 0
-      this.detectList.forEach(function(item, index, array){
+      this.detectList.forEach((item, index, array) => {
         if (item.color === vm.color.a && (item.y + (item.height / 2)) <= 360) tempA++
         if (item.color === vm.color.b && (item.y + (item.height / 2)) <= 360) tempB++
       })
       vm.current = {a: tempA, b: tempB}
+    },
+    RandomChoose: function (array) {
+      var n = Math.floor(Math.random() * array.length + 1) - 1
+      return array[n]
     }
   },
   watch: {
-    detectList: function () {
+    detectList: function() {
       this.GetCurrent()
     }
   }

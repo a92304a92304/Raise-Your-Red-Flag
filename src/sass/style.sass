@@ -1,25 +1,26 @@
-/* 定義變數區
+/* mixin */
+=flex-center
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
 
+
+/* 定義變數區
 \:root
   /* 定義畫面大小
   --display-width: 1280px
   --display-height: 720px
 
 #app
-  display: flex
-  flex-direction: column
-  justify-content: center
-  align-items: center
+  +flex-center
   width: 100%
 
-.opening
+.opening, .game-over
+  +flex-center
   text-align: center
   width: var(--display-width)
   height: var(--display-height)
-  display: flex
-  flex-direction: column
-  justify-content: center
-  align-items: center
   background: url('http://www.bmss.com/wp-content/uploads/2017/03/Red-Flag-Rule-Photo-e1488549729472.jpeg')
   background-size: cover
   background-position: right
@@ -28,19 +29,29 @@
     font-weight: 900
     text-shadow: 0 0 1rem white
     letter-spacing: 1rem
+    b
+      font-size: 9rem
   h2
     font-size: 3rem
     margin-bottom: 5rem
     font-weight: bold
-  h1 b
-    font-size: 9rem
-
-/* .game-over{
- *  background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5UE5fotjYhzq7GLiKfiRIBpa61HJZGfQDWhqFEu7UcYYpQGEgfQ');
- *}
-
-button.start
-  font-size: 3rem
+  button.start
+    font-size: 3rem
+  .setting
+    +flex-center
+    flex-direction: row
+    margin-top: 3rem
+    button
+      font-size: 1.5rem
+      margin-bottom: 1rem
+      margin-right: 1rem
+    .input-group
+      margin-right: 1rem
+      flex-direction: row
+    .input-group-text, input, select
+      font-size: 1.5rem
+    select
+      height: 100%
 
 .display
   position: relative
@@ -68,7 +79,7 @@ button.start
 
 .alert
   display: inline-block
-  background-color: rgba(255, 255, 255, 0.8)
+  background-color: rgba(255, 255, 255, .9)
 
 .game-start
   z-index: 999
@@ -121,12 +132,12 @@ button.start
 
 .line
   position: absolute
-  height: 50%
-  width: 100%
-  top: 0
   display: flex
   justify-content: flex-end
   align-items: flex-end
+  height: 50%
+  width: 100%
+  top: 0
   padding: 0 2rem
   font-size: 1.5rem
   color: rgba(150, 150, 150, 0.8)
