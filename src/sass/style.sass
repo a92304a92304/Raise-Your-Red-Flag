@@ -155,8 +155,13 @@
   border-bottom: 0.25rem dashed rgba(150, 150, 150, 0.5)
 
 .hide
-  transition: .5s opacity
+  transition: .3s opacity
   opacity: 0
 
-.animated.fadeOut
-  animation-duration: .3s
+.animated
+  &.flipInX
+    animation-duration: .3s
+  &.bounceIn
+    animation-duration: .5s
+  &.fadeOut
+    animation-duration: .2s

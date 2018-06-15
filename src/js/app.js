@@ -1,7 +1,7 @@
-var app = new Vue({
+const app = new Vue({
   el: '#app',
   data: {
-    state: 0,          // 0: 開頭畫面,  1: 遊戲開始,  2: GAME OVER
+    state: 0,          // 0: 開頭畫面,  1: 遊戲開始,  2: GAME OVER,  3: 說明
     canvas: null,
     tracker: null,
     task: null,
@@ -16,21 +16,40 @@ var app = new Vue({
     interval: null,         // 儲存計數器編號(結束遊戲用)
     isResultHide: false,
     // ––––––可設定––––––
-    color: { a: 'red', b: 'blue' },     // a和b旗分別代表之顏色(與註冊之顏色對應)
+    color: {
+      a: { name: '紅', reg: 'red' },
+      b: { name: '綠', reg: 'green' },
+    },
     speed: 3500,                        // 換題延遲
-    isShowDebug: true,                 // 是否顯示DEBUG視窗
+    isShowDebug: true,                  // 是否顯示DEBUG視窗
     maxGame: 20,                        // 遊戲總場數
-    isPlayVoice: false,                  // 是否播放語音
+    isPlayVoice: false,                 // 是否播放語音
   },
 
   mounted: function() {
-    var vm = this
+    const vm = this
     try{ responsiveVoice.setDefaultVoice("Chinese Female") }
     catch(e){}
+    this.Start()
   },
   methods: {
+    SetColor: function() {
+      // 先註冊顏色規則
+      tracking.ColorTracker.registerColor("red", (r, g, b) => {
+        return (r > 140 && g < 80 && b < 80)
+      })
+      tracking.ColorTracker.registerColor("green", (r, g, b) =>  {
+        return (r > 80 && g > 160 && b < 80)
+      })
+      tracking.ColorTracker.registerColor("blue", (r, g, b) => {
+        return (r < 80 && g < 80 && b > 140)
+      })
+
+      // 使用上面註冊的顏色。
+      this.tracker.setColors(['red', 'green', 'blue'])
+    },
     Start: function() {
-      var vm = this
+      const vm = this
       vm.state = 1                 // 設定遊戲狀態
       setTimeout(vm.RunTask, 500)  // 1秒後啟用攝像頭
       // 設定計數器
@@ -39,13 +58,14 @@ var app = new Vue({
       }, vm.speed)
     },
     Stop: function() {
-      var vm = this
+      const vm = this
       clearInterval(vm.interval)  // 停止計數器
       vm.state = 2
     },
     SetAnswer: function() {
-      var newQ = this.RandomMakeQuestion()
+      let newQ = this.RandomMakeQuestion()
 
+      this.isResultHide = false
       if(this.qNum != 0){
         this.CheckAnswer()
       }
@@ -71,60 +91,48 @@ var app = new Vue({
         return true
       }
 
+      setTimeout(() => {this.isResultHide = true} ,500)
+
       if(this.isPlayVoice)
         responsiveVoice.speak(this.q)
     },
     GetAnswerText: function(newQ) {
       let flag, action
+      const colorA = this.color.a.name
+      const colorB = this.color.b.name
 
       switch (newQ.flag) {
         case 'a':
-          flag = '紅旗'
+          flag = `${colorA}旗`
           break;
         case 'b':
-          flag = '藍旗'
+          flag = `${colorB}旗`
           break;
         case 'ab':
-          flag = this.RandomChoose(['紅旗藍旗', '藍旗紅旗', '通通', '全部'])
+          flag = this.RandomChoose([`${colorA}旗${colorB}旗`, `${colorB}旗${colorA}旗`, '通通', '全部'])
           break;
         default:
       }
       if(newQ.raise){
         action = this.RandomChoose(['舉起來', '升起來', '不要降', '不要放'])
       } else{
-        action = this.RandomChoose(['放下來', '放下去', '不要升', '不要舉'])
+        action = this.RandomChoose(['放下來', '降下來', '不要升', '不要舉'])
       }
       return `${flag}${action}`
     },
     CheckAnswer: function() {
-      var answer = this.answer
-      var current = this.current
-      this.result = (answer.a == current.a && answer.b == current.b)
+      let answer = this.answer
+      let current = this.current
 
-      this.isResultHide = false
-      setTimeout(() => { this.isResultHide = true }, 1000)
+      this.result = (answer.a === (current.a > 0) && answer.b === (current.b > 0))
 
       if(this.result) this.score += 10
+      else this.score -= (this.score >= 5) ? 5 : 0
+
       return this.result
     },
-    SetColor: function() {
-      var vm = this
-      // 先註冊顏色規則
-      tracking.ColorTracker.registerColor("red", (r, g, b) => {
-        return (r > 140 && g < 80 && b < 80)
-      })
-      tracking.ColorTracker.registerColor("green", (r, g, b) =>  {
-        return (r < 80 && g > 140 && b < 80)
-      })
-      tracking.ColorTracker.registerColor("blue", (r, g, b) => {
-        return (r < 80 && g < 80 && b > 140)
-      })
-
-      // 使用上面註冊的顏色。
-      vm.tracker.setColors(['red', 'green', 'blue'])
-    },
     RunTask: function() {
-      var vm = this
+      const vm = this
       // 初始化 Tracker 和 canvas
       vm.tracker = new tracking.ColorTracker()
       vm.canvas = document.getElementById('canvas')
@@ -133,7 +141,7 @@ var app = new Vue({
 
       // 開始追蹤顏色
       vm.tracker.on('track', (event) => {
-        var context = vm.canvas.getContext('2d')
+        let context = vm.canvas.getContext('2d')
         context.clearRect(0, 0, canvas.width, canvas.height)
 
         vm.detectList = event.data
@@ -154,8 +162,8 @@ var app = new Vue({
     RandomMakeQuestion: function() {
       //a =redFlag,b =blueFlag,ab =redFlag&blueFlag
       //raise: up->true down->false
-      var flag = Math.random()
-      var raise = Math.random()
+      let flag = Math.random()
+      let raise = Math.random()
 
       if(flag <= 0.33333){
         flag = 'a'
@@ -165,34 +173,27 @@ var app = new Vue({
         flag = 'ab'
       }
 
-      if(raise<=0.5){
-        raise = true
-      }else {
-        raise = false
-      }
+      raise = (raise<=0.5)
 
+      // 防止出現太多次重複動作
       if(this.repeatedAction.raise == raise){
         this.repeatedAction.time++
-        if(this.repeatedAction.time > 3){
+        if(this.repeatedAction.time > 2){
           raise = !raise
         }
       }else{
         this.repeatedAction.raise = raise
         this.repeatedAction.time = 0
       }
-      return {
-        flag: flag,
-        raise: raise,
-      }
-
+      return { flag, raise }
     },
     GetCurrent: function() {          // 檢查動作
-      var vm = this
-      var tempA = 0
-      var tempB = 0
+      const vm = this
+      let tempA = 0
+      let tempB = 0
       this.detectList.forEach((item, index, array) => {
-        if (item.color === vm.color.a && (item.y + (item.height / 2)) <= 360) tempA++
-        if (item.color === vm.color.b && (item.y + (item.height / 2)) <= 360) tempB++
+        if (item.color === vm.color.a.reg && (item.y + (item.height / 2)) <= 360) tempA++
+        if (item.color === vm.color.b.reg && (item.y + (item.height / 2)) <= 360) tempB++
       })
       vm.current = {a: tempA, b: tempB}
     },
