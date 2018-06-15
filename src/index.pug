@@ -19,7 +19,6 @@ html
               | 語音TTS 
               span.badge.badge-pill.badge-light(v-if='isPlayVoice') ON
               span.badge.badge-pill.badge-primary(v-else) OFF
-
             .input-group.mb-3
               .input-group-prepend #[span.input-group-text 題數]
               input.form-control(type='number' v-model.number="maxGame" style={width: `5rem`})
@@ -29,6 +28,9 @@ html
                 option(value='5000') 易　　
                 option(value='3500' selected) 普　　
                 option(value='2000') 難　　
+            a.btn.btn-primary.github(href='#' title='View on Github') 
+              img(src='github.png')
+            
 
         .gaming(key='1', v-else-if='state == 1')
           .display
