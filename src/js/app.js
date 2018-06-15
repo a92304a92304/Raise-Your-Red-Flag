@@ -18,7 +18,7 @@ const app = new Vue({
     // ––––––可設定––––––
     color: {
       a: { name: '紅', reg: 'red' },
-      b: { name: '綠', reg: 'green' },
+      b: { name: '藍', reg: 'blue' },
     },
     speed: 3500,                        // 換題延遲
     isShowDebug: true,                  // 是否顯示DEBUG視窗
@@ -30,7 +30,6 @@ const app = new Vue({
     const vm = this
     try{ responsiveVoice.setDefaultVoice("Chinese Female") }
     catch(e){}
-    this.Start()
   },
   methods: {
     SetColor: function() {
