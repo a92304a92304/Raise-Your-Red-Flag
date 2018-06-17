@@ -5,12 +5,8 @@
   justify-content: center
   align-items: center
 
-
-/* 定義變數區
-\:root
-  /* 定義畫面大小
-  --display-width: 1280px
-  --display-height: 720px
+$display-width: 1280px
+$display-height: 720px
 
 #app
   +flex-center
@@ -19,8 +15,8 @@
 .opening, .game-over
   +flex-center
   text-align: center
-  width: var(--display-width)
-  height: var(--display-height)
+  width: $display-width
+  height: $display-height
   background: url('http://www.bmss.com/wp-content/uploads/2017/03/Red-Flag-Rule-Photo-e1488549729472.jpeg')
   background-size: cover
   background-position: right
@@ -30,6 +26,7 @@
     text-shadow: 0 0 1rem white
     letter-spacing: 1rem
     b
+      color: #cc0000
       font-size: 9rem
   h2
     font-size: 3rem
@@ -37,6 +34,10 @@
     font-weight: bold
   button.start
     font-size: 3rem
+    margin-right: 1rem
+  button.howto-btn
+    font-size: 2rem
+
   .setting
     +flex-center
     flex-direction: row
@@ -57,12 +58,41 @@
     select
       height: 100%
 
+.howto
+  +flex-center
+  text-align: center
+  width: $display-width
+  height: $display-height
+  background: url('http://www.bmss.com/wp-content/uploads/2017/03/Red-Flag-Rule-Photo-e1488549729472.jpeg')
+  background-size: cover
+  background-position: right
+  background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)
+  h1
+    font-size: 3rem
+    font-weight: 900
+    text-shadow: 0 0 1rem white
+    letter-spacing: 1rem
+    b
+      color: #cc0000
+      font-size: 5rem
+  .btn.btn-dark
+    font-size: 2rem
+  .steps
+    +flex-center
+    flex-direction: row
+    .item
+      flex: 1
+      margin: 0 1rem
+      margin-bottom: 1rem
+      img
+        box-shadow: 0 0 1rem rgba(black, .1)
+
 .display
   position: relative
   margin-left: auto
   margin-right: auto
-  width: var(--display-width)
-  height: var(--display-height)
+  width: $display-width
+  height: $display-height
 
 #video, #canvas
   position: absolute

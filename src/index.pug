@@ -13,7 +13,9 @@ html
         .opening(key='0', v-if='state == 0')
           h1 紅旗#[b 舉]起來
           h2 Raise Your Red Flag
-          button.btn.btn-danger.start(type='button', @click='Start()') GAME START!
+          div
+            button.btn.btn-danger.start(type='button', @click='Start()') GAME START!
+            button.btn.btn-info.howto-btn(type='button', @click='state = 3') ?
           .setting
             button.btn(type='button' :class="{'btn-outline-secondary': !isPlayVoice,'btn-info': isPlayVoice}" @click="isPlayVoice = !isPlayVoice") 
               | 語音TTS 
@@ -25,9 +27,7 @@ html
             .input-group.mb-3
               .input-group-prepend #[span.input-group-text 難易度]
               select.custom-select(v-model.number="speed")
-                option(value='5000') 易　　
-                option(value='3500') 普　　
-                option(value='2000') 難　　
+                option(:value='i.value' v-for='i in difficulty') {{ i.name }}
             a.btn.btn-primary.github(href='https://github.com/a92304a92304/Raise-Your-Red-Flag' target='_blank' title='View on Github') 
               img(src='github.png')
             
@@ -55,11 +55,27 @@ html
             div 玩家舉的 {{ current }}
             div 正解 {{ answer }}
             div(:class="{'text-success': result, 'text-danger': !result}") 結果 {{ result }} 
+            
         .game-over(key='2', v-else-if='state == 2')
           h1 那支#[b 舉起]專家
           .score
             .alert.alert-info SCORE: {{ score }}
           button.btn.btn-danger.start(type='button', style='margin-top:1rem', onclick='javascript:window.location.reload()') 再玩壹次
+          
+        .howto(key='3', v-else-if='state == 3')
+          h1.mb-5 紅旗#[b 舉]起來
+          .steps
+            .item
+              h2 1. 允許瀏覽器取用攝像頭
+              img.img-fluid(src='https://i.imgur.com/wggTe47.png' style={maxWidth: `20rem`})
+          .steps
+            .item
+              h2 2. 從手邊找來藍色和紅色的物品
+            .item
+              h2 3. 快速的根據指令將物品舉起或放下
+              
+
+          button.btn.btn-dark(type='button' style='margin-top:1rem' @click='state = 0') ⬅ 返回
           
     script(src='js/tracking-min.js')
     //- script(src='js/stats.min.js')

@@ -24,6 +24,11 @@ const app = new Vue({
     isShowDebug: true,                  // 是否顯示DEBUG視窗
     maxGame: 20,                        // 遊戲總場數
     isPlayVoice: false,                 // 是否播放語音
+    difficulty: [                       // 難度選單
+      { name: '簡易　　', value: 5000 },
+      { name: '普通　　', value: 3500 },
+      { name: '困難　　', value: 1200 },
+    ]
   },
 
   mounted: function() {
