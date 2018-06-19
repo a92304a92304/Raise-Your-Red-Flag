@@ -46,7 +46,8 @@ const app = new Vue({
         return (r > 80 && g > 160 && b < 80)
       })
       tracking.ColorTracker.registerColor("blue", (r, g, b) => {
-        return (r < 80 && g < 80 && b > 140)
+        // return (r < 80 && g < 80 && b > 120)
+        return (b > (2/3) * r && b > (2/3) * g)
       })
 
       // 使用上面註冊的顏色。
