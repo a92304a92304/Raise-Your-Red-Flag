@@ -23,11 +23,11 @@ const app = new Vue({
     speed: 3500,                        // 換題延遲
     isShowDebug: true,                  // 是否顯示DEBUG視窗
     maxGame: 20,                        // 遊戲總場數
-    isPlayVoice: false,                 // 是否播放語音
+    isPlayVoice: true,                  // 是否播放語音
     difficulty: [                       // 難度選單
       { name: '簡易　　', value: 5000 },
       { name: '普通　　', value: 3500 },
-      { name: '困難　　', value: 1200 },
+      { name: '困難　　', value: 2000 },
     ]
   },
 
@@ -35,19 +35,21 @@ const app = new Vue({
     const vm = this
     try{ responsiveVoice.setDefaultVoice("Chinese Female") }
     catch(e){}
+    // vm.Start()
   },
   methods: {
     SetColor: function() {
       // 先註冊顏色規則
       tracking.ColorTracker.registerColor("red", (r, g, b) => {
-        return (r > 140 && g < 80 && b < 80)
+        // return (r > 140 && g < 80 && b < 80)
+        return (r > (2) * b && r > (2) * g) && (r > 100)
       })
       tracking.ColorTracker.registerColor("green", (r, g, b) =>  {
         return (r > 80 && g > 160 && b < 80)
       })
       tracking.ColorTracker.registerColor("blue", (r, g, b) => {
-        // return (r < 80 && g < 80 && b > 120)
-        return (b > (2/3) * r && b > (2/3) * g)
+        // return (r < 50 && g < 50 && b > 150)
+        return (b > (2) * r && b > (2) * g) && (b > 70)
       })
 
       // 使用上面註冊的顏色。
